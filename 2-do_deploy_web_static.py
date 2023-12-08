@@ -30,10 +30,9 @@ def do_pack():
         # create folder versions if it doesn’t exist
         local("mkdir -p versions")
         # extract the contents of a tar archive
-        result = local("tar -cvzf versions/\
-                       web_static_{}.tgz web_static/".format(timestr))
-        return result
-    except Exception:
+        local(f"tar -cvzf versions/web_static_{timestr}.tgz web_static/")
+        return ("versions/web_static_{}.tgz".format(timestr))
+    except BaseException:
         return None
 
 
