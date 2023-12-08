@@ -8,8 +8,7 @@ from fabric.operations import run, put, sudo
 from datetime import datetime
 
 
-env.hosts = ['52.90.98.156', '52.207.85.204']
-env.user = 'ubuntu'
+env.hosts = ['54.172.114.96', '54.160.113.130']
 
 
 def do_pack():
