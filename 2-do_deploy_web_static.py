@@ -21,7 +21,7 @@ def do_deploy(archive_path):
     Returns:
         Boolean: whether the archive is distributed or not
     """
-    if not os.path.exists(archive_path):
+    if os.path.exists(archive_path) is False:
         return False
 
     try:
@@ -52,5 +52,5 @@ def do_deploy(archive_path):
 
         print('New version deployed!')
         return True
-    except Exception:
+    except BaseException:
         return False
