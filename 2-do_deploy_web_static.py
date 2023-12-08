@@ -12,6 +12,32 @@ env.hosts = ['54.172.114.96', '54.160.113.130']
 env.user = 'ubuntu'
 
 
+def do_pack():
+    """ generates a .tgz archive from the contents of the web_static
+
+    All files in the folder web_static must be added to the final archive.
+    All archives must be stored in the folder versions.
+    The name of the archive created must be:
+        web_static_<year><month><day><hour><minute><second>.tgz
+    The function do_pack must return the archive path if the archive has
+    been correctly generated. Otherwise, it should return None.
+
+    Returns:
+        fabric.operations._AttributeString: archive path.
+    """
+    now = datetime.now().strftime("%Y%m%d%H%M%S")
+
+    # create folder versions if it doesn’t exist
+    local("mkdir -p versions")
+
+    # extract the contents of a tar archive
+    result = local(f"tar -czvf versions/web_static_{now}.tgz web_static")
+    if result.failed:
+        return None
+    else:
+        return result
+
+
 def do_deploy(archive_path):
     """distributes an archive to your web servers.
 
@@ -21,36 +47,47 @@ def do_deploy(archive_path):
     Returns:
         Boolean: whether the archive is distributed or not
     """
-    if os.path.exists(archive_path) is False:
+    if not os.path.exists(archive_path):
         return False
+    # Uncompress the archive to the folder,
+    # /data/web_static/releases/<archive filename without extension>
+    # on the web server
+    file_name = os.path.basename(archive_path)
+    folder_name = file_name.replace(".tgz", "")
+    folder_path = "/data/web_static/releases/{}/".format(folder_name)
+    success = False
 
     try:
-        # Uncompress the archive to the folder,
-        # /data/web_static/releases/<archive filename without extension>
-        # on the web server
-        new_comp = archive_path.split("/")[-1]
-        new_folder = ("/data/web_static/releases/" + new_comp.split(".")[0])
         # upload the archive to the /tmp/ directory of the web server
-        put(archive_path, "/tmp/")
+        put(archive_path, "/tmp/{}".format(file_name))
+
         # Create new directory for release
-        run("mkdir -p {}".format(new_folder))
+        run("mkdir -p {}".format(folder_path))
+
         # Untar archive
-        run("tar -xzf /tmp/{} -C {}".
-            format(new_comp, new_folder))
+        run("tar -xzf /tmp/{} -C {}".format(file_name, folder_path))
+
         # Delete the archive from the web server
-        run("rm /tmp/{}".format(new_comp))
+        run("rm -rf /tmp/{}".format(file_name))
+
         # Move extraction to proper directory
-        run("mv {}/web_static/* {}/".format(new_folder, new_folder))
+        run("mv {}web_static/* {}".format(folder_path, folder_path))
+
         # Delete first copy of extraction after move
-        run("rm -rf {}/web_static".format(new_folder))
+        run("rm -rf {}web_static".format(folder_path))
+
         # Delete the symbolic link /data/web_static/current from the web server
-        run('rm -rf /data/web_static/current')
+        run("rm -rf /data/web_static/current")
+
         # Create new the symbolic link /data/web_static/current on web server,
         # linked to the new version of your code,
         # (/data/web_static/releases/<archive filename without extension>
-        run("ln -s {} /data/web_static/current".format(new_folder))
+        run("ln -s {} /data/web_static/current".format(folder_path))
 
         print('New version deployed!')
-        return True
-    except BaseException:
-        return False
+        success = True
+
+    except Exception:
+        success = False
+        print("Could not deploy")
+    return success
