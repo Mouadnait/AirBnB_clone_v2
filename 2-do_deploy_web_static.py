@@ -57,21 +57,21 @@ def do_deploy(archive_path):
         file_name = archive_path.split("/")[-1]
         no_ext = ("/data/web_static/releases/" + file_name.split(".")[0])
         # Create new directory for release
-        run('mkdir -p {}/'.format(no_ext))
+        run("mkdir -p {}/".format(no_ext))
         # Uncompress archive
-        run('tar -xzf /tmp/{} -C {}'.format(file_name, no_ext))
+        run("tar -xzf /tmp/{} -C {}".format(file_name, no_ext))
         # Delete the archive from the web server
-        run('rm /tmp/{}'.format(file_name))
+        run("rm /tmp/{}".format(file_name))
         # Move extraction to proper directory
-        run('mv {0}/web_static/* {0}/'.format(no_ext))
+        run("mv {0}/web_static/* {0}/".format(no_ext))
         # Delete first copy of extraction after move
-        run('rm -rf {}/web_static'.format(no_ext))
+        run("rm -rf {}/web_static".format(no_ext))
         # Delete the symbolic link /data/web_static/current from the web server
-        run('rm -rf /data/web_static/current')
+        run("rm -rf /data/web_static/current")
         # Create new the symbolic link /data/web_static/current on web server,
         # linked to the new version of your code,
         # (/data/web_static/releases/<archive filename without extension>
-        run('ln -s {}/ /data/web_static/current'.format(no_ext))
+        run("ln -s {}/ /data/web_static/current".format(no_ext))
         print("New version deployed!")
         return True
     except FileNotFoundError:
