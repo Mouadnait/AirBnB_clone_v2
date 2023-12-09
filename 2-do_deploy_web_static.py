@@ -59,7 +59,7 @@ def do_deploy(archive_path):
         # Create new directory for release
         run('mkdir -p {}/'.format(no_ext))
         # Uncompress archive
-        run('tar -xzf /tmp/{} -C /'.format(file_name, no_ext))
+        run('tar -xzf /tmp/{} -C {}'.format(file_name, no_ext))
         # Delete the archive from the web server
         run('rm /tmp/{}'.format(file_name))
         # Move extraction to proper directory
