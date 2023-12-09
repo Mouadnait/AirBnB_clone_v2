@@ -49,30 +49,30 @@ def do_deploy(archive_path):
     if exists(archive_path) is False:
         return False
     try:
+        # upload the archive to the /tmp/ directory of the web server
+        put(archive_path, '/tmp/')
         # Uncompress the archive to the folder,
         # /data/web_static/releases/<archive filename without extension>
         # on the web server
-        file_n = archive_path.split("/")[-1]
-        no_ext = file_n.split(".")[0]
-        path = "/data/web_static/releases/"
-        # upload the archive to the /tmp/ directory of the web server
-        put(archive_path, '/tmp/')
+        file_name = archive_path.split("/")[-1]
+        no_ext = ("/data/web_static/releases/" + file_name.split(".")[0])
+        # Create new directory for release
+        run('mkdir -p {}/'.format(no_ext))
         # Uncompress archive
-        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
+        run('tar -xzf /tmp/{} -C /'.format(file_name, no_ext))
         # Delete the archive from the web server
-        run('rm /tmp/{}'.format(file_n))
+        run('rm /tmp/{}'.format(file_name))
+        # Move extraction to proper directory
+        run('mv {0}/web_static/* {0}/'.format(no_ext))
+        # Delete first copy of extraction after move
+        run('rm -rf {}/web_static'.format(no_ext))
         # Delete the symbolic link /data/web_static/current from the web server
         run('rm -rf /data/web_static/current')
         # Create new the symbolic link /data/web_static/current on web server,
         # linked to the new version of your code,
         # (/data/web_static/releases/<archive filename without extension>
-        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
-        # Create new directory for release
-        run('mkdir -p {}{}/'.format(path, no_ext))
-        # Move extraction to proper directory
-        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
-        # Delete first copy of extraction after move
-        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('ln -s {}/ /data/web_static/current'.format(no_ext))
+        print("New version deployed!")
         return True
-    except:
+    except FileNotFoundError:
         return False
