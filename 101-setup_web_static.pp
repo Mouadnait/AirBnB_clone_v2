@@ -1,4 +1,3 @@
-#!/usr/bin/puppet apply
 # Script that redoes task 0 (sets up your web servers for the deployment of web_static)
 # Configures a web server for deployment of web_static.
 exec { '/usr/bin/env apt -y update' : }
@@ -92,7 +91,7 @@ file { '/etc/nginx/sites-available/default':
     File['/var/www/error/404.html'],
     Exec['change-data-owner']
   ],
-}
+} ->
 
 exec { 'enable-site':
   command => "ln -sf '/etc/nginx/sites-available/default' '/etc/nginx/sites-enabled/default'",
