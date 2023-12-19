@@ -50,7 +50,7 @@ def do_deploy(archive_path):
         return False
     try:
         # upload the archive to the /tmp/ directory of the web server
-        put(archive_path, '/tmp/')
+        put(archive_path, "/tmp/")
         # Uncompress the archive to the folder,
         # /data/web_static/releases/<archive filename without extension>
         # on the web server
