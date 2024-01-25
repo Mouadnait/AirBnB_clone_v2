@@ -1,84 +1,49 @@
 #!/usr/bin/python3
-"""script that starts a Flask web application"""
+"""a script that starts a flask application"""
+
 from flask import Flask, render_template
 
 app = Flask(__name__)
 
 
-@app.route('/', strict_slashes=False)
-def index():
-    """display "Hello HBNB!"
-
-    Returns:
-        str: text on the index page
-    """
+@app.route("/", strict_slashes=False)
+def hello_hbnb():
+    """display hello hbnb"""
     return 'Hello HBNB!'
 
 
-@app.route('/hbnb', strict_slashes=False)
-def hbnb_route():
-    """display "HBNB"
-
-    Returns:
-        str: text on the page
-    """
+@app.route("/hbnb", strict_slashes=False)
+def hbnb_page():
+    """display hbnb"""
     return 'HBNB'
 
 
-@app.route('/c/<text>', strict_slashes=False)
-def c_route(text):
-    """display "C", followed by the value of the text variable
-
-    Args:
-        text (str): text to be served on the page
-
-    Returns:
-        str: text on the page
-    """
-    return 'C {}'.format(text.replace('_', ' '))
+@app.route("/c/<text>", strict_slashes=False)
+def C_is_fun_page(text):
+    """display c plus a variable"""
+    newText = text.replace('_', ' ')
+    return f'C {newText}'
 
 
-@app.route('/python', strict_slashes=False)
-@app.route('/python/<text>', strict_slashes=False)
-def python_route(text='is cool'):
-    """display "Python", followed by the value of the text variable
-
-    Args:
-        text (str): text to be served on the page
-
-    Returns:
-        str: text on the page
-    """
-    return 'Python {}'.format(text.replace('_', ' '))
+@app.route("/python", strict_slashes=False)
+@app.route("/python/<text>", strict_slashes=False)
+def python_page(text="is_cool"):
+    """display python is fun"""
+    newText = text.replace('_', ' ')
+    return f'Python {newText}'
 
 
-@app.route('/number/<int:n>', strict_slashes=False)
-def number_route(n):
-    """display "n is a number" only if n is an integer
-
-    Args:
-        n (integer): number to be displayed on page
-
-    Returns:
-        str: text on the page
-    """
-    return '{:d} is a number'.format(n)
+@app.route("/number/<int:n>", strict_slashes=False)
+def number_page(n):
+    """display a number"""
+    return f'{n} is a number'
 
 
-@app.route('/number_template/<int:n>', strict_slashes=False)
-def number_template_route(n):
-    """display a HTML page only if n is an integer
-
-    H1 tag: "Number: n" inside the tag BODY
-
-    Args:
-        n (integer): number to be displayed on page
-
-    Returns:
-        str: text on the page
-    """
-    return render_template('5-number.html', num=n)
+@app.route("/number_template/<int:n>", strict_slashes=False)
+def number_html_page(n):
+    """display a number"""
+    return render_template('5-number.html', number=n)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='5000', debug=True)
+    app.run(host='0.0.0.0', port=5000)
