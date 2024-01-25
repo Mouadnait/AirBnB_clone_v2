@@ -1,17 +1,11 @@
 #!/usr/bin/python3
 """script that starts a Flask web application"""
-
-
-# import Flask class from flask module
-# import render_template for rendering templates to browser
 from flask import Flask, render_template
 
-# create an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
-app.url_map.strict_slashes = False
 
 
-@app.route('/')
+@app.route('/', strict_slashes=False)
 def index():
     """display "Hello HBNB!"
 
@@ -21,7 +15,7 @@ def index():
     return 'Hello HBNB!'
 
 
-@app.route('/hbnb')
+@app.route('/hbnb', strict_slashes=False)
 def hbnb_route():
     """display "HBNB"
 
@@ -31,7 +25,7 @@ def hbnb_route():
     return 'HBNB'
 
 
-@app.route('/c/<text>')
+@app.route('/c/<text>', strict_slashes=False)
 def c_route(text):
     """display "C", followed by the value of the text variable
 
@@ -44,9 +38,9 @@ def c_route(text):
     return 'C {}'.format(text.replace('_', ' '))
 
 
-@app.route('/python', defaults={'text': 'is cool'})
-@app.route('/python/<text>')
-def python_route(text):
+@app.route('/python', strict_slashes=False)
+@app.route('/python/<text>', strict_slashes=False)
+def python_route(text='is cool'):
     """display "Python", followed by the value of the text variable
 
     Args:
@@ -58,7 +52,7 @@ def python_route(text):
     return 'Python {}'.format(text.replace('_', ' '))
 
 
-@app.route('/number/<int:n>')
+@app.route('/number/<int:n>', strict_slashes=False)
 def number_route(n):
     """display "n is a number" only if n is an integer
 
@@ -68,10 +62,10 @@ def number_route(n):
     Returns:
         str: text on the page
     """
-    return '{} is a number'.format(n)
+    return '{:d} is a number'.format(n)
 
 
-@app.route('/number_template/<int:n>')
+@app.route('/number_template/<int:n>', strict_slashes=False)
 def number_template_route(n):
     """display a HTML page only if n is an integer
 
@@ -87,4 +81,4 @@ def number_template_route(n):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port='5000', debug=True)
