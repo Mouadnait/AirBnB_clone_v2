@@ -1,37 +1,35 @@
 #!/usr/bin/python3
-"""script that starts a Flask web application"""
+"""a script that starts a flask application"""
 
-
-# import Flask class from flask module
-# import render_template for rendering templates to browser
-# fetch data from storage engine
 from flask import Flask, render_template
-
 from models import storage
+from models.state import State
 
-# create an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
-app.url_map.strict_slashes = False
+
+
+@app.route('/states', strict_slashes=False)
+def states_page():
+    """returns a list of states"""
+    states = storage.all('State').values()
+    return render_template('9-states.html', states=states)
+
+
+@app.route('/states/<id>', strict_slashes=False)
+def states_with_id_page(id):
+    """returns a list of states with a specific id"""
+    states = storage.all('State').values()
+    for state in states:
+        if state.id == id:
+            return render_template('9-states.html', state_id=state)
+    return render_template('9-states.html')
 
 
 @app.teardown_appcontext
-def teardown_db(exception=None):
-    """removes the current SQLAlchemy Session
-    """
-    if storage is not None:
-        storage.close()
-
-
-@app.route('/states')
-@app.route('/states/<state_id>')
-def states(state_id=None):
-    """displays a HTML page: inside the tag BODY"""
-    states = storage.all("State")
-    if state_id is None:
-        return render_template('9-states.html', states=states)
-    state = states.get('State.{}'.format(state_id))
-    return render_template('9-states.html', state=state)
+def close_database(arg):
+    """closes the current database"""
+    storage.close()
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
